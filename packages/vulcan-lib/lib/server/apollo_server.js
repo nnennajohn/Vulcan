@@ -9,7 +9,7 @@ import compression from 'compression';
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 // import { Accounts } from 'meteor/accounts-base';
-import { Engine } from 'apollo-engine';
+// import { Engine } from 'apollo-engine';
 
 import { GraphQLSchema } from '../modules/graphql.js';
 import { Utils } from '../modules/utils.js';
@@ -30,56 +30,56 @@ registerSetting('apolloEngine.logLevel', 'INFO', 'Log level (one of INFO, DEBUG,
 registerSetting('apolloServer.tracing', Meteor.isDevelopment, 'Tracing by Apollo. Default is true on development and false on prod', true);
 
 // see https://github.com/apollographql/apollo-cache-control
-const engineApiKey = getSetting('apolloEngine.apiKey');
-const engineLogLevel = getSetting('apolloEngine.logLevel', 'INFO')
-const engineConfig = {
-  apiKey: engineApiKey,
-  // "origins": [
-  //   {
-  //     "http": {
-  //       "url": "http://localhost:3000/graphql"
-  //     }
-  //   }
-  // ],
-  'stores': [
-    {
-      'name': 'vulcanCache',
-      'inMemory': {
-        'cacheSize': 20000000
-      }
-    }
-  ],
-  // "sessionAuth": {
-  //   "store": "embeddedCache",
-  //   "header": "Authorization"
-  // },
-  // "frontends": [
-  //   {
-  //     "host": "127.0.0.1",
-  //     "port": 3000,
-  //     "endpoint": "/graphql",
-  //     "extensions": {
-  //       "strip": []
-  //     }
-  //   }
-  // ],
-  'queryCache': {
-    'publicFullQueryStore': 'vulcanCache',
-    'privateFullQueryStore': 'vulcanCache'
-  },
-  // "reporting": {
-  //   "endpointUrl": "https://engine-report.apollographql.com",
-  //   "debugReports": true
-  // },
-  'logging': {
-    'level': engineLogLevel
-  }
-};
-let engine;
-if (engineApiKey) {
-  engine = new Engine({ engineConfig });
-  engine.start();
-}
+// const engineApiKey = getSetting('apolloEngine.apiKey');
+// const engineLogLevel = getSetting('apolloEngine.logLevel', 'INFO')
+// const engineConfig = {
+//   apiKey: engineApiKey,
+//   // "origins": [
+//   //   {
+//   //     "http": {
+//   //       "url": "http://localhost:3000/graphql"
+//   //     }
+//   //   }
+//   // ],
+//   'stores': [
+//     {
+//       'name': 'vulcanCache',
+//       'inMemory': {
+//         'cacheSize': 20000000
+//       }
+//     }
+//   ],
+//   // "sessionAuth": {
+//   //   "store": "embeddedCache",
+//   //   "header": "Authorization"
+//   // },
+//   // "frontends": [
+//   //   {
+//   //     "host": "127.0.0.1",
+//   //     "port": 3000,
+//   //     "endpoint": "/graphql",
+//   //     "extensions": {
+//   //       "strip": []
+//   //     }
+//   //   }
+//   // ],
+//   'queryCache': {
+//     'publicFullQueryStore': 'vulcanCache',
+//     'privateFullQueryStore': 'vulcanCache'
+//   },
+//   // "reporting": {
+//   //   "endpointUrl": "https://engine-report.apollographql.com",
+//   //   "debugReports": true
+//   // },
+//   'logging': {
+//     'level': engineLogLevel
+//   }
+// };
+// let engine;
+// if (engineApiKey) {
+//   engine = new Engine({ engineConfig });
+//   engine.start();
+// }
 
 // defaults
 const defaultConfig = {
@@ -116,9 +116,9 @@ const createApolloServer = (givenOptions = {}, givenConfig = {}) => {
   config.configServer(graphQLServer);
 
   // Use Engine middleware
-  if (engineApiKey) {
-    graphQLServer.use(engine.expressMiddleware());
-  }
+  // if (engineApiKey) {
+  //   graphQLServer.use(engine.expressMiddleware());
+  // }
 
   // cookies
   graphQLServer.use(cookiesMiddleware());
