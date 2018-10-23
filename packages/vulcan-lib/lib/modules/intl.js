@@ -1,5 +1,35 @@
 import SimpleSchema from 'simpl-schema';
 
+export const Strings = {};
+
+export const Domains = {};
+
+export const addStrings = (language, strings) => {
+  if (typeof Strings[language] === 'undefined') {
+    Strings[language] = {};
+  }
+  Strings[language] = {
+    ...Strings[language],
+    ...strings
+  };
+};
+
+export const getString = ({id, values, defaultMessage, locale}) => {
+  const messages = Strings[locale] || {};
+  let message = messages[id] || defaultMessage;
+  if (message && values) {
+    Object.keys(values).forEach(key => {
+      // note: see replaceAll definition in vulcan:lib/utils
+      message = message.replaceAll(`{${key}}`, values[key]);
+    });
+  }
+  return message;
+}
+
+export const registerDomain = (locale, domain) => {
+  Domains[domain] = locale;
+}
+
 export const Locales = [];
 
 export const registerLocale = locale => {
@@ -54,7 +84,7 @@ export const validateIntlField = function () {
 
   requiredLocales.forEach((locale, index) => {
     const strings = this.value;
-    const hasString = strings && strings.some(s => s && s.locale === locale.id && s.value);
+    const hasString = strings && Array.isArray(strings) && strings.some(s => s && s.locale === locale.id && s.value);
     if (!hasString) {
       const originalFieldName = this.key.replace('_intl', '');
       errors.push({ id: 'errors.required', path: `${this.key}.${index}`, properties: { name: originalFieldName, locale: locale.id }});
