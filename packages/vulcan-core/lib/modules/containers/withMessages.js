@@ -16,32 +16,37 @@ import { connect } from 'react-redux';
 
 addAction({
   messages: {
-    flash(content) {
+    flash(content, flashType = 'error') {
       return {
         type: 'FLASH',
-        content,
+        content:
+          typeof content === 'string'
+            ? {
+                message: content
+              }
+            : content,
+        flashType
       };
     },
     clear(i) {
       return {
         type: 'CLEAR',
-        i,
+        i
       };
     },
     markAsSeen(i) {
       return {
         type: 'MARK_AS_SEEN',
-        i,
+        i
       };
     },
     clearSeen() {
       return {
         type: 'CLEAR_SEEN'
       };
-    },
+    }
   }
 });
-
 
 /*
 
@@ -52,10 +57,11 @@ addAction({
 addReducer({
   messages: (state = [], action) => {
     // default values
-    const flashType = action.content && typeof action.content.type !== 'undefined' ? action.content.type : 'error';
+    const flashType =
+      action.content && typeof action.content.type !== 'undefined' ? action.content.type : action.flashType;
     const currentMsg = typeof action.i === 'undefined' ? {} : state[action.i];
 
-    switch(action.type) {
+    switch (action.type) {
       case 'FLASH':
         return [
           ...state,
@@ -64,27 +70,19 @@ addReducer({
             ...action.content,
             type: flashType,
             seen: false,
-            show: true,
-          },
+            show: true
+          }
         ];
       case 'MARK_AS_SEEN':
-        return [
-          ...state.slice(0, action.i),
-          { ...currentMsg, seen: true },
-          ...state.slice(action.i + 1),
-        ];
+        return [...state.slice(0, action.i), { ...currentMsg, seen: true }, ...state.slice(action.i + 1)];
       case 'CLEAR':
-        return [
-          ...state.slice(0, action.i),
-          { ...currentMsg, show: false },
-          ...state.slice(action.i + 1),
-        ];
+        return [...state.slice(0, action.i), { ...currentMsg, show: false }, ...state.slice(action.i + 1)];
       case 'CLEAR_SEEN':
-        return state.map(message => message.seen ? { ...message, show: false } : message);
+        return state.map(message => (message.seen ? { ...message, show: false } : message));
       default:
         return state;
     }
-  },
+  }
 });
 
 /*
@@ -93,9 +91,13 @@ addReducer({
 
 */
 
-const mapStateToProps = state => ({ messages: state.messages, });
+const mapStateToProps = state => ({ messages: state.messages });
 const mapDispatchToProps = dispatch => bindActionCreators(getActions().messages, dispatch);
 
-const withMessages = component => connect(mapStateToProps, mapDispatchToProps)(component);
+const withMessages = component =>
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(component);
 
 export default withMessages;
